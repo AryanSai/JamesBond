@@ -1,0 +1,4 @@
+SourceSystem = GBO
+nominal in nominalCurrencyList
+settlementDate > Today
+payment in paymentConventionList
