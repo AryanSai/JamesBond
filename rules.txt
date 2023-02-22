@@ -1,4 +1,8 @@
 SourceSystem = GBO
-nominal in nominalCurrencyList
+SourceSystem = FOTradeCapture
+SourceSystem = Murex
+agreementDate = Today
+nominalCurrency in nominalCurrencyList
 settlementDate > Today
-payment in paymentConventionList
+fixingFrequency == paymentFrequency
+paymentConvention in paymentConventionList
