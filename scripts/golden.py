@@ -27,6 +27,11 @@ def today():
     current_date = datetime.combine(current_date.date(), time.min)
     return int(current_date.timestamp())
 
+def get_timestamp(dt):
+    date = datetime.strptime(dt, '%d-%m-%Y')
+    timestamp = int(date.timestamp())
+    return timestamp
+    
 def getOperand(op):
     if op == 'GBO' or op == 'FOTradeCapture' or op == 'Murex':
         return op  
@@ -46,12 +51,13 @@ def getOperand(op):
         sd_list =  find_attribute_in_json(data,op)
         result = []
         for i in sd_list:
-            date = datetime.strptime(i, '%d-%m-%Y')
-            timestamp = int(date.timestamp())
+            timestamp = get_timestamp(i)
             result.append(timestamp)
         return result    
     elif op == 'agreementDate':    
-        return data['esperanto']['agreementDate']    
+        dt = data['esperanto']['agreementDate']
+        timestamp = get_timestamp(dt)
+        return timestamp   
     elif op == 'nominalCurrencyList':
         return nominalCurrencyList
     elif op == 'Today':
