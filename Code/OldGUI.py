@@ -9,11 +9,11 @@ def go_to_contract(data,cid):
         print('FO Trade Capture')
         foTradeCapture.main(data,ID,cid)
 
-    elif source_system == 'GBO':
+    elif source_system == 'GB':
         print('GBO')
         gbo.main(data,ID,cid)
 
-    elif source_system == 'Murex':
+    elif source_system == 'GBO':
         print('Murex') 
         murex.main(data,ID)
 

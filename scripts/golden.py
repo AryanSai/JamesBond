@@ -8,7 +8,6 @@ paymentConventionList = ["in arrears","in advance"]
 with open("/home/dmacs/Desktop/JamesBond/IRS1.json", "r") as file:
         data = json.load(file)
 
-
 def getSection(sourceSytem):
     with open('/home/dmacs/Desktop/JamesBond/rules.txt', 'r') as file:
         file_content = file.read()
@@ -18,12 +17,12 @@ def getSection(sourceSytem):
         lines = section.split('\n')
         if len(lines) > 0:
             first_line = lines[0]
-            if first_line.startswith('key:header-sourceSystem = value:GBO'):
-                print('Found GBO')
-                gbo =  section
-            elif first_line.startswith('key:header-sourceSystem = value:FO Trade Capture'):
+            if first_line.startswith('key:header-sourceSystem = value:FO Trade Capture'):
                 print('Found FO')
                 fo = section
+            elif first_line.startswith('key:header-sourceSystem = value:GBO'):
+                print('Found GBO')
+                gbo =  section
             elif first_line.startswith('key:header-sourceSystem = value:Murex'):
                 print('Found Murex')
                 murex =  section    
@@ -72,7 +71,7 @@ def today():
     return stamp
 
 def readRules(goldenContract):
-    
+
     section  =getSection('GBO')
 
     section = section.split('\n')
