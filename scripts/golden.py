@@ -1,120 +1,89 @@
 from brownie import accounts,GoldenContract
-import json,pytz
-from datetime import datetime, time
+import json
+from datetime import date,datetime
+
 nominalCurrencyList = ["AUD", "CAD", "EUR", "JPY", "NZD", "NOK", "GBP", "SEK", "CHF", "USD"]
 paymentConventionList = ["in arrears","in advance"]
 
 with open("/home/dmacs/Desktop/JamesBond/IRS1.json", "r") as file:
         data = json.load(file)
 
-#take the list of rules and check on the individual rules taken from a text file
-
-def find_attribute_in_json(data,attribute):
-    results = []
-    if isinstance(data, dict):
-        for key, value in data.items():
-            if key == attribute:
-                results.append(value)
-            else:
-                results.extend(find_attribute_in_json(value, attribute))
-    elif isinstance(data, list):
-        for item in data:
-            results.extend(find_attribute_in_json(item, attribute))
-    return results
-
-def today():
-    current_date = datetime.now(pytz.timezone('GMT'))
-    current_date = datetime.combine(current_date.date(), time.min)
-    return int(current_date.timestamp())
-
 def get_timestamp(dt):
     date = datetime.strptime(dt, '%d-%m-%Y')
     timestamp = int(date.timestamp())
     return timestamp
-    
-def getOperand(op):
-    if op == 'GBO' or op == 'FOTradeCapture' or op == 'Murex':
-        return op  
-    elif op == 'SourceSystem':
-        return data['header']['sourceSystem']
-    elif op == 'nominalCurrency':
-        return find_attribute_in_json(data,op)
-    elif op == 'paymentConvention':
-        return find_attribute_in_json(data,op) 
-    elif op == 'paymentConventionList':
-        return paymentConventionList       
-    elif op == 'fixingFrequency':
-        return find_attribute_in_json(data,op) 
-    elif op == 'paymentFrequency':
-        return find_attribute_in_json(data,op)         
-    elif op == 'settlementDate':
-        sd_list =  find_attribute_in_json(data,op)
-        result = []
-        for i in sd_list:
-            timestamp = get_timestamp(i)
-            result.append(timestamp)
-        return result    
-    elif op == 'agreementDate':    
-        dt = data['esperanto']['agreementDate']
-        timestamp = get_timestamp(dt)
-        return timestamp   
-    elif op == 'nominalCurrencyList':
-        return nominalCurrencyList
-    elif op == 'Today':
-        return today()
+
+def fetch_operand(op):
+    #op = "key:esperanto-deals-deal1-legs-BUY_Fixed-flows[0]-nominal"
+    #op = "value:sairam"
+    if op.split(":")[0] == 'key':
+        path = op.split(":")[1]
+        print('key:',path)
+        keys = path.split("-")
+        value = data
+        for key in keys:
+            if "[" in key:
+                key_name, index = key[:-1].split("[")
+                value = value[key_name][int(index)]
+            elif 'Date' in key:
+                value =  get_timestamp(value[key])
+            else:
+                value = value[key]         
+        return value
+
+    elif op.split(":")[0] == 'value':
+        if op.split(":")[1] == 'Today':
+            return today()
+        return op.split(":")[1] 
+
+def today():
+    today = date.today()
+    formatted_date = today.strftime("%d-%m-%Y")
+    stamp = get_timestamp(formatted_date)
+    return stamp
 
 def readRules(goldenContract):
     with open('/home/dmacs/Desktop/JamesBond/rules.txt', 'r') as file:
         for rule in file:
-            op1, op, op2 = rule.split()
+            words = rule.split()
+            op1 = words[0]
+            op = words[1]
+            op2 = ' '.join(words[2:])  #for special case of FO Trade Capture
             print('operand1 :', op1)
             print('operator :', op)
             print('operand2 :', op2)
+
             if op == '=':
                 print("Equality")
-                operand1=[]
-                op1 = getOperand(op1)
-                operand1.append(op1)
-                print(operand1)
-                operand2 = getOperand(op2)
-                print(operand2)
-                if isinstance(operand1,list):
-                    for i in operand1:
-                        a=goldenContract.isEqual(i,operand2, {"from": accounts[0]})
-                        print(a)
-            elif op == '==':
-                print("Component wise Equality")
-                operand1 = getOperand(op1)
-                print(operand1)
-                operand2 = getOperand(op2)
-                print(operand2)
-                for i in range(len(operand1)):
-                    print(goldenContract.isEqual(operand1[i],operand2[i], {"from": accounts[0]}))
+                operand1=fetch_operand(op1)
+                print('operand 1:', operand1)
+                operand2=fetch_operand(op2)
+                print('operand 2:', operand2)
+                print(goldenContract.isEqual(operand1, operand2, {"from": accounts[0]}))
+            
             elif op == '>':
+                #should be integer
                 print("Greater")
-                operand1 = getOperand(op1)
-                print(operand1)
-                operand2 = getOperand(op2)
-                print(operand2)
-                if isinstance(operand1,list):
-                    for i in operand1:
-                        b=goldenContract.isGreater(i,operand2, {"from": accounts[0]})
-                        print(b)
+                operand1=fetch_operand(op1)
+                print('operand 1:', operand1)
+                operand2=fetch_operand(op2)
+                print('operand 2:', operand2)
+                print(goldenContract.isGreater(operand1, operand2, {"from": accounts[0]}))
+
             elif op == 'in':
                 print("inList")
-                operand1 = getOperand(op1)
+                operand1 = fetch_operand(op1)
                 print(operand1)
-                operand2 = getOperand(op2)
+                #should generalise this
+                if op2 == 'nominalCurrencyList':
+                    operand2 = nominalCurrencyList
+                elif op2 == 'paymentConventionList':
+                    operand2 = paymentConventionList  
                 print(operand2)
-                if isinstance(operand1,list):
-                    for i in operand1:
-                        c = goldenContract.inList(i,operand2, {"from": accounts[0]})
-                        print(c)
+                print(goldenContract.inList(operand1,operand2, {"from": accounts[0]}))   
+                 
             else:
                 print("Invalid Operand")
-                inputList=nominalCurrencyList
-                goldenContract.inList(operand1,inputList, {"from": accounts[0]})
-
 def main():
     goldenContract = GoldenContract.deploy({"from":accounts[0]})
     readRules(goldenContract)

@@ -1,8 +1,8 @@
-SourceSystem = GBO
-SourceSystem = FOTradeCapture
-SourceSystem = Murex
-agreementDate = Today
-nominalCurrency in nominalCurrencyList
-settlementDate > Today
-fixingFrequency == paymentFrequency
-paymentConvention in paymentConventionList
+key:header-sourceSystem = value:GBO
+key:header-sourceSystem = value:FO Trade Capture
+key:header-sourceSystem = value:Murex
+key:esperanto-agreementDate = value:Today
+key:esperanto-deals-deal1-legs-BUY_Fixed-flows[0]-settlementDate > value:Today
+key:esperanto-deals-deal1-legs-BUY_Fixed-flows[0]-nominalCurrency in nominalCurrencyList
+key:esperanto-deals-deal1-legs-BUY_Fixed-paymentConvention in paymentConventionList
+key:esperanto-deals-deal1-legs-BUY_Fixed-fixingFrequency = key:esperanto-deals-deal1-legs-BUY_Fixed-paymentFrequency
