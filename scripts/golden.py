@@ -1,6 +1,6 @@
 from brownie import accounts,GoldenContract
 import json
-from datetime import date,datetime
+from datetime import date, datetime
 
 nominalCurrencyList = ["AUD", "CAD", "EUR", "JPY", "NZD", "NOK", "GBP", "SEK", "CHF", "USD"]
 paymentConventionList = ["in arrears","in advance"]
@@ -72,7 +72,7 @@ def today():
 
 def readRules(goldenContract):
 
-    section  =getSection('GBO')
+    section = getSection('GBO')
 
     section = section.split('\n')
     for rule in section:
@@ -99,6 +99,7 @@ def readRules(goldenContract):
             operand2=fetch_operand(op2)
             print('operand 2:', operand2)
             print(goldenContract.isGreater(operand1, operand2, {"from": accounts[0]}))
+        
         elif op == 'in':
             print("inList")
             operand1 = fetch_operand(op1)
