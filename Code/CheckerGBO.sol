@@ -26,27 +26,15 @@ contract CheckerGBO{
 
     struct Trade { 
         string sourceSystem;
-        string buyFixingFrequency;
-        string sellFixingFrequency;
         Dates date;
         Nominals nominal;
         Amounts amount;
         string jsonCID;
     }
 
-    
     //internalID => Trade
     mapping(string => Trade) public trades;
 
-    function storeFrequency(
-            string memory ID,
-            string memory _buyFF,
-            string memory _sellFF
-        ) public {    
-        trades[ID].buyFixingFrequency=_buyFF;
-        trades[ID].sellFixingFrequency= _sellFF;
-    }
-    
     function storeDates(
             string memory ID,
             uint256 _settlementDateBuyFee,
@@ -87,6 +75,16 @@ contract CheckerGBO{
         trades[ID].amount.amountBuyInterest= _amountBuyInterest;
         trades[ID].amount.amountSellFee= _amountSellFee;
         trades[ID].amount.amountSellInterest= _amountSellInterest;
+    }
+
+    function checkEquality(string memory _pfbuy, string memory _ffbuy) public pure returns (bool) {
+        bytes32 hashA = keccak256(abi.encodePacked(_pfbuy));
+        bytes32 hashB = keccak256(abi.encodePacked(_ffbuy));
+        return hashA == hashB;
+    }
+
+    function isGreater(uint256 _dateA, uint256 _dateB) public pure returns (bool) {
+        return _dateA > _dateB;
     }
 
     function getNominals(string memory ID) public view returns(string memory,string memory,string memory,string memory){

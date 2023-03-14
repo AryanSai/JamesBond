@@ -1,12 +1,19 @@
 from brownie import accounts,GoldenContract
-import json
+import json,ipfsapi, json
 from datetime import date, datetime
+import scripts.foTradeCapture as foTradeCapture, scripts.gbo as gbo,scripts.murex as murex
 
 nominalCurrencyList = ["AUD", "CAD", "EUR", "JPY", "NZD", "NOK", "GBP", "SEK", "CHF", "USD"]
 paymentConventionList = ["in arrears","in advance"]
 
 with open("/home/dmacs/Desktop/JamesBond/IRS1.json", "r") as file:
         data = json.load(file)
+
+def ipfs(file_path):
+    api = ipfsapi.Client('127.0.0.1', 5001)
+    result = api.add(file_path)
+    cid = result['Hash']
+    return cid
 
 def getSection(sourceSytem):
     with open('/home/dmacs/Desktop/JamesBond/rules.txt', 'r') as file:
@@ -20,9 +27,11 @@ def getSection(sourceSytem):
             if first_line.startswith('key:header-sourceSystem = value:FO Trade Capture'):
                 print('Found FO')
                 fo = section
+                
             elif first_line.startswith('key:header-sourceSystem = value:GBO'):
                 print('Found GBO')
                 gbo =  section
+
             elif first_line.startswith('key:header-sourceSystem = value:Murex'):
                 print('Found Murex')
                 murex =  section    
@@ -70,11 +79,26 @@ def today():
     stamp = get_timestamp(formatted_date)
     return stamp
 
-def readRules(goldenContract):
+def check(goldenContract,source_system):
+    #open the json
+    with open("/home/dmacs/Desktop/JamesBond/IRS1.json", "r") as file:
+        data = json.load(file)
 
-    section = getSection('GBO')
+    #upload the json and get cid
+    cid = ipfs('/home/dmacs/Desktop/JamesBond/IRS1.json')
 
+    section = getSection(source_system)
+
+    #read rules and do checking on the contract
     section = section.split('\n')
+
+    #find the number of rules so that you can check if all rules are satisfied
+    number_of_rules = len(section)
+    print("Number of Rules = ",number_of_rules)
+
+    #list of trues
+    list_of_trues=[]
+
     for rule in section:
         words = rule.split()
         op1 = words[0]
@@ -83,13 +107,14 @@ def readRules(goldenContract):
         print('operand1 :', op1)
         print('operator :', op)
         print('operand2 :', op2)
+
         if op == '=':
             print("Equality")
             operand1=fetch_operand(op1)
             print('operand 1:', operand1)
             operand2=fetch_operand(op2)
             print('operand 2:', operand2)
-            print(goldenContract.isEqual(operand1, operand2, {"from": accounts[0]}))
+            list_of_trues.append(goldenContract.isEqual(operand1, operand2, {"from": accounts[0]}))
         
         elif op == '>':
             #should be integer
@@ -98,7 +123,7 @@ def readRules(goldenContract):
             print('operand 1:', operand1)
             operand2=fetch_operand(op2)
             print('operand 2:', operand2)
-            print(goldenContract.isGreater(operand1, operand2, {"from": accounts[0]}))
+            list_of_trues.append(goldenContract.isGreater(operand1, operand2, {"from": accounts[0]}))
         
         elif op == 'in':
             print("inList")
@@ -110,10 +135,36 @@ def readRules(goldenContract):
             elif op2 == 'paymentConventionList':
                 operand2 = paymentConventionList  
             print(operand2)
-            print(goldenContract.inList(operand1,operand2, {"from": accounts[0]}))   
+            list_of_trues.append(goldenContract.inList(operand1,operand2, {"from": accounts[0]}))   
              
         else:
             print("Invalid Operand")
+
+    #check if all the rules are satisfied
+    if(len(list_of_trues)==number_of_rules):
+        print('\nAll the rules satisfied! Storing on Blockchain! ')
+        go_to_contract(data,cid,source_system,goldenContract)
+    else:
+        print('\nNot all rules are satisfied!!')    
+
+def go_to_contract(data,cid,source_system,goldenContract):
+    ID = data['header']['internalID']
+    #source_system = data['header']['sourceSystem']
+
+    if source_system == 'FO Trade Capture':
+        print('FO Trade Capture')
+        foTradeCapture.main(data,ID,cid)
+
+    elif source_system == 'GBO':
+        print('GBO')
+        gbo.main(data,ID,cid)
+
+    elif source_system == 'Murex':
+        print('Murex') 
+        murex.main(data,ID,goldenContract)
+
 def main():
     goldenContract = GoldenContract.deploy({"from":accounts[0]})
-    readRules(goldenContract)
+
+    source_system = input('Enter the name of the Source System: ')
+    check(goldenContract,source_system)

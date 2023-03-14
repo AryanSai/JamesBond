@@ -1,21 +1,4 @@
-import tkinter,json,ipfsapi,datetime
-import scripts.foTradeCapture as foTradeCapture, scripts.gbo as gbo,scripts.murex as murex
-
-def go_to_contract(data,cid):
-    ID = data['header']['internalID']
-    source_system = data['header']['sourceSystem']
-
-    if source_system == 'FO Trade Capture':
-        print('FO Trade Capture')
-        foTradeCapture.main(data,ID,cid)
-
-    elif source_system == 'GBO':
-        print('GBO')
-        gbo.main(data,ID,cid)
-
-    elif source_system == 'Murex':
-        print('Murex') 
-        murex.main(data,ID)
+import tkinter,json,datetime
 
 def current_timestamp():
     current_time = datetime.datetime.now(datetime.timezone.utc)
@@ -23,18 +6,10 @@ def current_timestamp():
     print(formatted_time)
     return formatted_time
 
-def ipfs(file_path):
-    api = ipfsapi.Client('127.0.0.1', 5001)
-    result = api.add(file_path)
-    cid = result['Hash']
-    return cid
-
-def modify_json(source):
-    #upload the json and get cid
-    cid = ipfs('/home/dmacs/Desktop/JamesBond/IRS1.json')
-
+def modify_json(source):    
     with open("/home/dmacs/Desktop/JamesBond/IRS1.json", "r") as file:
         data = json.load(file)
+        
     #change the source to the given argument
     data['header']['sourceSystem'] = source 
     #change event timestamp to current time
@@ -44,8 +19,6 @@ def modify_json(source):
     json.dump(data, file)
     file.close()
     print(data['header']['sourceSystem'])
-
-    go_to_contract(data,cid)
 
 def main():
     m = tkinter.Tk() #m is the name of the mainwindow

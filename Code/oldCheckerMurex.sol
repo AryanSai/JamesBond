@@ -32,4 +32,18 @@ contract CheckerMurex{
         trades[ID].amountSellInterest= _amountSellInterest;
         trades[ID].jsonCID=_jsonCID;
     }
+
+    function checkPaymentConvention(string memory _pc) public pure returns (bool) {
+        bytes32 pc = keccak256(abi.encodePacked(_pc));
+        if(pc==keccak256(abi.encodePacked("in arrears")) || pc==keccak256(abi.encodePacked("in advance")))
+            return true;
+        else
+            return false;
+    }
+
+    function checkEquality(string memory _strA, string memory _strB) public pure returns (bool) {
+        bytes32 hashA = keccak256(abi.encodePacked(_strA));
+        bytes32 hashB = keccak256(abi.encodePacked(_strB));
+        return hashA == hashB;
+    }
 }

@@ -26,4 +26,18 @@ contract CheckerFO{
         trades[ID].nominalCurrencySellInterest=_nominalCurrencySellInterest;
         trades[ID].jsonCID=_jsonCID;
     }
+
+    function validNominalCurrency(string memory _nominalCurrency) public view returns (bool) {
+        for (uint256 i = 0; i < nominalCurrency.length; i++) {
+            bytes32 nominalCurrencyHash = keccak256(abi.encodePacked(_nominalCurrency));
+            if (keccak256(abi.encodePacked(nominalCurrency[i]))==nominalCurrencyHash) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function isSameDate(uint256 _date1,uint256 _date2) public pure returns (bool) {
+        return _date1 == _date2;
+    }
 }
