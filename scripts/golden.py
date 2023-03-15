@@ -1,5 +1,5 @@
 from brownie import accounts,GoldenContract
-import json,ipfsapi, json
+import json,ipfsapi
 from datetime import date, datetime
 import scripts.foTradeCapture as foTradeCapture, scripts.gbo as gbo,scripts.murex as murex
 
@@ -25,15 +25,15 @@ def getSection(sourceSytem):
         if len(lines) > 0:
             first_line = lines[0]
             if first_line.startswith('key:header-sourceSystem = value:FO Trade Capture'):
-                print('Found FO')
+                #print('\nFound FO')
                 fo = section
                 
             elif first_line.startswith('key:header-sourceSystem = value:GBO'):
-                print('Found GBO')
+                #print('\nFound GBO')
                 gbo =  section
 
             elif first_line.startswith('key:header-sourceSystem = value:Murex'):
-                print('Found Murex')
+                #print('\nFound Murex')
                 murex =  section    
             else:
                 print('Unknown section:')
@@ -94,7 +94,7 @@ def check(goldenContract,source_system):
 
     #find the number of rules so that you can check if all rules are satisfied
     number_of_rules = len(section)
-    print("Number of Rules = ",number_of_rules)
+    print("\nNumber of Rules = ",number_of_rules)
 
     #list of trues
     list_of_trues=[]
@@ -104,7 +104,7 @@ def check(goldenContract,source_system):
         op1 = words[0]
         op = words[1]
         op2 = ' '.join(words[2:])  #for special case of FO Trade Capture
-        print('operand1 :', op1)
+        print('\noperand1 :', op1)
         print('operator :', op)
         print('operand2 :', op2)
 
@@ -161,7 +161,7 @@ def go_to_contract(data,cid,source_system,goldenContract):
 
     elif source_system == 'Murex':
         print('Murex') 
-        murex.main(data,ID,goldenContract)
+        murex.main(data,ID,goldenContract,cid)
 
 def main():
     goldenContract = GoldenContract.deploy({"from":accounts[0]})

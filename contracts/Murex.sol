@@ -1,9 +1,9 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-contract CheckerMurex{
+contract Murex{
     struct Trade { 
-        string sourceSystem;
+        uint256 timestamp;
         string buyPaymentConvention;
         string sellPaymentConvention;
         string nominalBuyFee;
@@ -20,8 +20,16 @@ contract CheckerMurex{
     //internalID => Trade
     mapping(string => Trade) public trades;
 
+    function storePaymentConvention(string memory ID,string memory _buyPC,string memory _sellPC) public{
+        trades[ID].buyPaymentConvention = _buyPC; 
+        trades[ID].sellPaymentConvention = _sellPC;
+    }
+
+    function storeTimestamp(string memory ID,uint256 _timestamp) public {    
+        trades[ID].timestamp = _timestamp;
+    }
+
     function store(string memory ID,string memory _nominalBuyFee,string memory _nominalBuyInterest,string memory _nominalSellFee,string memory _nominalSellInterest,uint256 _amountBuyFee,uint256 _amountBuyInterest,uint256 _amountSellFee,uint256 _amountSellInterest,string memory _jsonCID) public {
-        trades[ID].sourceSystem='Murex';
         trades[ID].nominalBuyFee=_nominalBuyFee;
         trades[ID].nominalBuyInterest= _nominalBuyInterest;
         trades[ID].nominalSellFee= _nominalSellFee;

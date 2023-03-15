@@ -1,11 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-contract CheckerFO{
-    string[] nominalCurrency = ["AUD", "CAD", "EUR", "JPY", "NZD", "NOK", "GBP", "SEK", "CHF", "USD"];
-    
+contract FO{
+
     struct Trade { 
-        string sourceSystem;
+        uint256 timestamp;
         uint256 agreementDate;
         string nominalCurrencyBuyFee;
         string nominalCurrencyBuyInterest;
@@ -17,8 +16,8 @@ contract CheckerFO{
     //internalID => Trade
     mapping(string => Trade) public trades;
 
-    function store(string memory ID,uint256 _agreementDate,string memory _nominalCurrencyBuyFee,string memory _nominalCurrencyBuyInterest,string memory _nominalCurrencySellFee,string memory _nominalCurrencySellInterest,string memory _jsonCID) public {
-        trades[ID].sourceSystem='FO Trade Capture';
+    function store(string memory ID,uint256 _timestamp,uint256 _agreementDate,string memory _nominalCurrencyBuyFee,string memory _nominalCurrencyBuyInterest,string memory _nominalCurrencySellFee,string memory _nominalCurrencySellInterest,string memory _jsonCID) public {
+        trades[ID].timestamp=_timestamp;
         trades[ID].agreementDate=_agreementDate;
         trades[ID].nominalCurrencyBuyFee=_nominalCurrencyBuyFee;
         trades[ID].nominalCurrencyBuyInterest=_nominalCurrencyBuyInterest;

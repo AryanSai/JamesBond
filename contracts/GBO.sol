@@ -1,7 +1,7 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-contract CheckerGBO{       
+contract GBO{       
     
     struct Amounts{
         uint256 amountBuyFee;
@@ -25,7 +25,7 @@ contract CheckerGBO{
     }
 
     struct Trade { 
-        string sourceSystem;
+        uint256 timestamp;
         string buyFixingFrequency;
         string sellFixingFrequency;
         Dates date;
@@ -33,16 +33,15 @@ contract CheckerGBO{
         Amounts amount;
         string jsonCID;
     }
-
-    
+   
     //internalID => Trade
     mapping(string => Trade) public trades;
 
-    function storeFrequency(
-            string memory ID,
-            string memory _buyFF,
-            string memory _sellFF
-        ) public {    
+    function storeTimestamp(string memory ID,uint256 _timestamp) public {    
+        trades[ID].timestamp = _timestamp;
+    }
+
+    function storeFrequency(string memory ID,string memory _buyFF,string memory _sellFF) public {    
         trades[ID].buyFixingFrequency=_buyFF;
         trades[ID].sellFixingFrequency= _sellFF;
     }
@@ -54,13 +53,12 @@ contract CheckerGBO{
             uint256 _settlementDateSellFee,
             uint256 _settlementDateSellInterest,
             string memory _jsonCID
-    ) public {
-        trades[ID].sourceSystem = "GBO";
-        trades[ID].date.settlementDateBuyFee=_settlementDateBuyFee;
-        trades[ID].date.settlementDateBuyInterest=_settlementDateBuyInterest;
-        trades[ID].date.settlementDateSellFee= _settlementDateSellFee;
-        trades[ID].date.settlementDateSellInterest= _settlementDateSellInterest;
-        trades[ID].jsonCID=_jsonCID;
+        ) public {
+            trades[ID].date.settlementDateBuyFee=_settlementDateBuyFee;
+            trades[ID].date.settlementDateBuyInterest=_settlementDateBuyInterest;
+            trades[ID].date.settlementDateSellFee= _settlementDateSellFee;
+            trades[ID].date.settlementDateSellInterest= _settlementDateSellInterest;
+            trades[ID].jsonCID=_jsonCID;
     }
 
     function storeNominals(
@@ -70,10 +68,10 @@ contract CheckerGBO{
             string memory _nominalSellFee,
             string memory _nominalSellInterest
         ) public {    
-        trades[ID].nominal.nominalBuyFee=_nominalBuyFee;
-        trades[ID].nominal.nominalBuyInterest= _nominalBuyInterest;
-        trades[ID].nominal.nominalSellFee= _nominalSellFee;
-        trades[ID].nominal.nominalSellInterest= _nominalSellInterest;
+            trades[ID].nominal.nominalBuyFee=_nominalBuyFee;
+            trades[ID].nominal.nominalBuyInterest= _nominalBuyInterest;
+            trades[ID].nominal.nominalSellFee= _nominalSellFee;
+            trades[ID].nominal.nominalSellInterest= _nominalSellInterest;
     }
 
     function storeAmounts(
@@ -82,24 +80,26 @@ contract CheckerGBO{
             uint256 _amountBuyInterest,
             uint256 _amountSellFee,
             uint256 _amountSellInterest
-    )public {
-        trades[ID].amount.amountBuyFee=_amountBuyFee;
-        trades[ID].amount.amountBuyInterest= _amountBuyInterest;
-        trades[ID].amount.amountSellFee= _amountSellFee;
-        trades[ID].amount.amountSellInterest= _amountSellInterest;
+        )public {
+            trades[ID].amount.amountBuyFee=_amountBuyFee;
+            trades[ID].amount.amountBuyInterest= _amountBuyInterest;
+            trades[ID].amount.amountSellFee= _amountSellFee;
+            trades[ID].amount.amountSellInterest= _amountSellInterest;
     }
 
     function getNominals(string memory ID) public view returns(string memory,string memory,string memory,string memory){
-        return (trades[ID].nominal.nominalBuyFee,
-        trades[ID].nominal.nominalBuyInterest,
-        trades[ID].nominal.nominalSellFee,
-        trades[ID].nominal.nominalSellInterest);
+        return (
+            trades[ID].nominal.nominalBuyFee,
+            trades[ID].nominal.nominalBuyInterest,
+            trades[ID].nominal.nominalSellFee,
+            trades[ID].nominal.nominalSellInterest);
     }
 
     function getAmounts(string memory ID) public view returns(uint256,uint256,uint256,uint256){
-        return (trades[ID].amount.amountBuyFee,
-        trades[ID].amount.amountBuyInterest,
-        trades[ID].amount.amountSellFee,
-        trades[ID].amount.amountSellInterest);
+        return (
+            trades[ID].amount.amountBuyFee,
+            trades[ID].amount.amountBuyInterest,
+            trades[ID].amount.amountSellFee,
+            trades[ID].amount.amountSellInterest);
     }    
 }

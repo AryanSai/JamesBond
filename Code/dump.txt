@@ -1,0 +1,50 @@
+//murex
+function getDetails(string memory ID) public view returns(string memory,string memory,string memory,string memory){
+        return (
+            trades[ID].sourceSystem,
+            trades[ID].buyPaymentConvention,
+            trades[ID].sellPaymentConvention,
+            trades[ID].jsonCID
+        );
+    }
+
+    function getNominals(string memory ID) public view returns(string memory,string memory,string memory,string memory){
+        return (
+            trades[ID].nominalBuyFee,
+            trades[ID].nominalBuyInterest,
+            trades[ID].nominalSellFee,
+            trades[ID].nominalSellInterest
+        );
+    }
+    function getAmounts(string memory ID) public view returns(uint256,uint256,uint256,uint256){
+        return (
+            trades[ID].amountBuyFee,
+            trades[ID].amountBuyInterest,
+            trades[ID].amountSellFee,
+            trades[ID].amountSellInterest
+        );
+    }
+
+//gbo
+function getSourceSystemCID(string memory ID) public view returns(string memory,string memory){
+        return (
+            trades[ID].sourceSystem,
+            trades[ID].jsonCID
+        );
+    }
+
+    function getFrequency(string memory ID) public view returns(string memory,string memory){
+        return (
+            trades[ID].buyFixingFrequency,
+            trades[ID].sellFixingFrequency
+        );
+    }
+    
+    function getDates(string memory ID) public view returns(uint256,uint256,uint256,uint256){
+        return (
+            trades[ID].date.settlementDateBuyFee,
+            trades[ID].date.settlementDateBuyInterest,
+            trades[ID].date.settlementDateSellFee,
+            trades[ID].date.settlementDateSellInterest
+        );
+    }

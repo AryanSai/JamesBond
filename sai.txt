@@ -1,0 +1,24 @@
+function getTradesByTimestampRange(uint256 startTimestamp, uint256 endTimestamp) public view returns (Trade[] memory) {
+    Trade[] memory matchingTrades = new Trade[](trades.length);
+    uint256 count = 0;
+    for (uint256 i = 0; i < trades.length; i++) {
+        if (trades[i].timestamp >= startTimestamp && trades[i].timestamp <= endTimestamp) {
+            matchingTrades[count] = trades[i];
+            count++;
+        }
+    }
+    return matchingTrades[0:count];
+}
+
+
+function getTradesByTimestamp(uint256 timestamp) public view returns (Trade[] memory) {
+    Trade[] memory matchingTrades = new Trade[](trades.length);
+    uint256 count = 0;
+    for (uint256 i = 0; i < trades.length; i++) {
+        if (trades[i].timestamp == timestamp) {
+            matchingTrades[count] = trades[i];
+            count++;
+        }
+    }
+    return matchingTrades[0:count];
+}
