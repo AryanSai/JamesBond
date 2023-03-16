@@ -1,18 +1,13 @@
-import datetime,pytz
-from brownie import Contract,accounts
-import json
+from datetime import datetime
+from brownie import accounts
+import pytz
 
 def current_timestamp():
     current_date = datetime.now(pytz.timezone('GMT'))
     return int(current_date.timestamp())
 
-def main(data,ID,cid):
+def main(goldenContract,data,ID,cid):
     account = accounts.load("ganache")
-
-    with open("/home/dmacs/Desktop/JamesBond/build/contracts/FO.json", "r") as file:
-        file_fo = json.load(file)
-    fo_bytecode=file_fo['abi']
-    contract_CheckerFO = Contract.from_abi("FO.sol", '0x8393287a9b1e24297Bbce78f590e135E6982f47E', fo_bytecode)
 
     #date from json
     ad = data['esperanto']['agreementDate']
@@ -24,10 +19,14 @@ def main(data,ID,cid):
     nominal_buy_interest= data["esperanto"]["deals"]["deal1"]["legs"]["BUY_Fixed"]["flows"][1]["nominalCurrency"]
     nominal_sell_fee = data["esperanto"]["deals"]["deal1"]["legs"]["SELL_Floating"]["flows"][0]["nominalCurrency"]
     nominal_sell_interest= data["esperanto"]["deals"]["deal1"]["legs"]["SELL_Floating"]["flows"][1]["nominalCurrency"]
+
+    trade=f"agreementDate:{agreementdate}, nominalCurrencyBuyFee:{nominal_buy_fee}, nominalCurrencyBuyInterest:{nominal_buy_interest}, nominalCurrencySellFee:{nominal_sell_fee}, nominalCurrencySellInterest:{nominal_sell_interest}, CID:{cid}"
+    # print(trade)
     
-    tr=contract_CheckerFO.store(ID,current_timestamp(),agreementdate,nominal_buy_fee,nominal_buy_interest,nominal_sell_fee,nominal_sell_interest,cid,{"from": account})
-    tr.wait(1)
+    ts=current_timestamp()
+    t = goldenContract.store(ts,ID,'FO Trade Capture',trade,{"from": account})
+    t.wait(1)
+
+    print(goldenContract.trades(ts,{"from": account}))
     
     print("\nSuccessfully Stored on Blockchain!!")
-
-    print(contract_CheckerFO.trades(ID,{"from": account}))

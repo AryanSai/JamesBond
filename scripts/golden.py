@@ -1,4 +1,4 @@
-from brownie import accounts,GoldenContract
+from brownie import accounts,GoldenContract,Contract
 import json,ipfsapi
 from datetime import date, datetime
 import scripts.foTradeCapture as foTradeCapture, scripts.gbo as gbo,scripts.murex as murex
@@ -79,7 +79,7 @@ def today():
     stamp = get_timestamp(formatted_date)
     return stamp
 
-def check(goldenContract,source_system):
+def check(goldenContract,source_system,account):
     #open the json
     with open("/home/dmacs/Desktop/JamesBond/IRS1.json", "r") as file:
         data = json.load(file)
@@ -114,7 +114,7 @@ def check(goldenContract,source_system):
             print('operand 1:', operand1)
             operand2=fetch_operand(op2)
             print('operand 2:', operand2)
-            list_of_trues.append(goldenContract.isEqual(operand1, operand2, {"from": accounts[0]}))
+            list_of_trues.append(goldenContract.isEqual(operand1, operand2, {"from": account}))
         
         elif op == '>':
             #should be integer
@@ -123,7 +123,7 @@ def check(goldenContract,source_system):
             print('operand 1:', operand1)
             operand2=fetch_operand(op2)
             print('operand 2:', operand2)
-            list_of_trues.append(goldenContract.isGreater(operand1, operand2, {"from": accounts[0]}))
+            list_of_trues.append(goldenContract.isGreater(operand1, operand2, {"from": account}))
         
         elif op == 'in':
             print("inList")
@@ -135,7 +135,7 @@ def check(goldenContract,source_system):
             elif op2 == 'paymentConventionList':
                 operand2 = paymentConventionList  
             print(operand2)
-            list_of_trues.append(goldenContract.inList(operand1,operand2, {"from": accounts[0]}))   
+            list_of_trues.append(goldenContract.inList(operand1,operand2, {"from": account}))   
              
         else:
             print("Invalid Operand")
@@ -153,18 +153,27 @@ def go_to_contract(data,cid,source_system,goldenContract):
 
     if source_system == 'FO Trade Capture':
         print('FO Trade Capture')
-        foTradeCapture.main(data,ID,cid)
+        foTradeCapture.main(goldenContract,data,ID,cid)
 
     elif source_system == 'GBO':
         print('GBO')
-        gbo.main(data,ID,cid)
+        gbo.main(goldenContract,data,ID,cid)
 
     elif source_system == 'Murex':
         print('Murex') 
         murex.main(data,ID,goldenContract,cid)
 
 def main():
-    goldenContract = GoldenContract.deploy({"from":accounts[0]})
+    account = accounts.load("ganache")
+
+    #load contract
+    with open("/home/dmacs/Desktop/JamesBond/build/contracts/GoldenContract.json", "r") as file:
+      file_murex = json.load(file)
+    bytecode=file_murex['abi']
+    
+    goldenContract = Contract.from_abi("GoldenContract.sol", '0x02c5E7ADBDaE96625d97606dEa3CEEE90A7437Ee', bytecode)
+    
+    # goldenContract = GoldenContract.deploy({"from":accounts[0]})
 
     source_system = input('Enter the name of the Source System: ')
-    check(goldenContract,source_system)
+    check(goldenContract,source_system,account)

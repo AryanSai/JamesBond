@@ -2,7 +2,6 @@
 pragma solidity ^0.8.9;
 
 contract FO{
-
     struct Trade { 
         uint256 timestamp;
         uint256 agreementDate;

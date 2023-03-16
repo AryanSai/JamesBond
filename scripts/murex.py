@@ -1,5 +1,6 @@
-from brownie import accounts,Contract
-import datetime,json,pytz
+from brownie import accounts
+from datetime import datetime
+import pytz,re
 
 def current_timestamp():
     current_date = datetime.now(pytz.timezone('GMT'))
@@ -8,30 +9,18 @@ def current_timestamp():
 def main(data,ID,goldenContract,cid):
     account = accounts.load("ganache")
 
-    #load contract
-    with open("/home/dmacs/Desktop/JamesBond/build/contracts/Murex.json", "r") as file:
-        file_murex = json.load(file)
-    murex_bytecode=file_murex['abi']
-    contract_CheckerMurex = Contract.from_abi("Murex.sol", '0xE4A3e3FDd8771e7C5C02AfecE2Ba68b26bcd2df8', murex_bytecode)
-    
-    #check if data has changed from that of the json
-    #get gbo contract for checking with prev instance of the json
-    with open("/home/dmacs/Desktop/JamesBond/build/contracts/GBO.json", "r") as file:
-        file_gbo = json.load(file)
-    gbo_bytecode=file_gbo['abi']
-    contract_CheckerGBO = Contract.from_abi("GBO.sol", '0xFfcB014A561eb93355c319B568faBe860e1c7e3A', gbo_bytecode)
+    struct_trade=goldenContract.findTrade(ID,'GBO',{"from": account})
+    trade = struct_trade[2]    
+    print(trade)
 
-    (chain_nominal_buy_fee,
-        chain_nominal_buy_interest,
-        chain_nominal_sell_fee,
-        chain_nominal_sell_interest)=contract_CheckerGBO.getNominals(ID,{"from": account})
-    print(contract_CheckerGBO.getNominals(ID,{"from": account}))
-
-    (chain_amount_buy_fee,
-        chain_amount_buy_interest,
-        chain_amount_sell_fee,
-        chain_amount_sell_interest)=contract_CheckerGBO.getAmounts(ID,{"from": account})    
-    print(contract_CheckerGBO.getAmounts(ID,{"from": account}))
+    chain_amount_buy_fee = re.search(r'amountBuyFee:(\d+\.\d+)', trade).group(1)
+    chain_amount_buy_interest = re.search(r'amountBuyInterest:(\d+\.\d+)', trade).group(1)
+    chain_amount_sell_fee = re.search(r'amountSellFee:(\d+\.\d+)', trade).group(1)
+    chain_amount_sell_interest = re.search(r'amountSellInterest:(\d+\.\d+)', trade).group(1)
+    chain_nominal_buy_fee = re.search(r'nominalBuyFee:(\d+\.\d+)', trade).group(1)
+    chain_nominal_buy_interest = re.search(r'nominalBuyInterest:(\d+\.\d+)', trade).group(1)
+    chain_nominal_sell_fee = re.search(r'nominalSellFee:(\d+\.\d+)', trade).group(1)
+    chain_nominal_sell_interest = re.search(r'nominalSellInterest:(\d+\.\d+)', trade).group(1)
 
     pc_buy = data["esperanto"]["deals"]["deal1"]["legs"]["BUY_Fixed"]["paymentConvention"]
     pc_sell = data["esperanto"]["deals"]["deal1"]["legs"]["SELL_Floating"]["paymentConvention"]
@@ -46,26 +35,28 @@ def main(data,ID,goldenContract,cid):
     amount_sell_fee= data["esperanto"]["deals"]["deal1"]["legs"]["SELL_Floating"]["flows"][0]["amount"]
     amount_sell_interest= data["esperanto"]["deals"]["deal1"]["legs"]["SELL_Floating"]["flows"][0]["amount"]
 
-    #check equality
+    # check equality
     t3 = goldenContract.isEqual(nominal_buy_fee, chain_nominal_buy_fee,{"from": account})
     t4 = goldenContract.isEqual(nominal_buy_interest, chain_nominal_buy_interest,{"from": account})
     t5 = goldenContract.isEqual(nominal_sell_fee, chain_nominal_sell_fee,{"from": account})
     t6 = goldenContract.isEqual(nominal_sell_interest, chain_nominal_sell_interest,{"from": account})
-    t7 = goldenContract.isEqual(int(amount_buy_fee), chain_amount_buy_fee,{"from": account})
-    t8 = goldenContract.isEqual(int(amount_buy_interest), chain_amount_buy_interest,{"from": account})
-    t9 = goldenContract.isEqual(int(amount_sell_fee), chain_amount_sell_fee,{"from": account})
-    t0 = goldenContract.isEqual(int(amount_sell_interest), chain_amount_sell_interest,{"from": account})
+    t7 = goldenContract.isEqual(amount_buy_fee, chain_amount_buy_fee,{"from": account})
+    t8 = goldenContract.isEqual(amount_buy_interest, chain_amount_buy_interest,{"from": account})
+    t9 = goldenContract.isEqual(amount_sell_fee, chain_amount_sell_fee,{"from": account})
+    t0 = goldenContract.isEqual(amount_sell_interest, chain_amount_sell_interest,{"from": account})
     
     if(t3 == False or t4 == False or t5 == False or t6 == False or t7 == False or t8 == False or t9 == False or t0 == False):
         print("All checks not matched!!")    
     else:
         print("All fine!!!")
-        t=contract_CheckerMurex.storeTimestamp(ID,current_timestamp(),{"from": account})
-        t.wait(1)
-        t=contract_CheckerMurex.storePaymentConvention(ID,pc_buy,pc_sell,{"from": account})
-        t.wait(1)
-        t1=contract_CheckerMurex.store(ID,nominal_buy_fee,nominal_buy_interest,nominal_sell_fee,nominal_sell_interest,amount_buy_fee,amount_buy_interest,amount_sell_fee,amount_sell_interest,cid,{"from": account})
-        t1.wait(1)
-        print("Successfully stored on the blockchain")
 
-        print(contract_CheckerMurex.trades(ID,{"from": account}))
+        trade1=f"buyPaymentConvention:{pc_buy}, sellPaymentConvention:{pc_sell}, nominalBuyFee:{nominal_buy_fee}, nominalBuyInterest:{nominal_buy_interest}, nominalSellFee:{nominal_sell_fee}, nominalSellInterest:{nominal_sell_interest}, amountBuyFee:{amount_buy_fee}, amountBuyInterest:{amount_buy_interest}, amountSellFee:{amount_sell_fee}, amountSellInterest:{amount_sell_interest}, jsonCID:{cid}"
+        # print(trade)
+    
+        ts=current_timestamp()
+        t = goldenContract.store(ts,ID,'Murex',trade1,{"from": account})
+        t.wait(1)
+
+        print(goldenContract.trades(ts,{"from": account}))
+
+        print("Successfully stored the data on the blockchain!!")
