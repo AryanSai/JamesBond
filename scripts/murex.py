@@ -35,20 +35,37 @@ def main(data,ID,goldenContract,cid):
     amount_sell_fee= data["esperanto"]["deals"]["deal1"]["legs"]["SELL_Floating"]["flows"][0]["amount"]
     amount_sell_interest= data["esperanto"]["deals"]["deal1"]["legs"]["SELL_Floating"]["flows"][0]["amount"]
 
+    flag=True
     # check equality
-    t3 = goldenContract.isEqual(nominal_buy_fee, chain_nominal_buy_fee,{"from": account})
-    t4 = goldenContract.isEqual(nominal_buy_interest, chain_nominal_buy_interest,{"from": account})
-    t5 = goldenContract.isEqual(nominal_sell_fee, chain_nominal_sell_fee,{"from": account})
-    t6 = goldenContract.isEqual(nominal_sell_interest, chain_nominal_sell_interest,{"from": account})
-    t7 = goldenContract.isEqual(amount_buy_fee, chain_amount_buy_fee,{"from": account})
-    t8 = goldenContract.isEqual(amount_buy_interest, chain_amount_buy_interest,{"from": account})
-    t9 = goldenContract.isEqual(amount_sell_fee, chain_amount_sell_fee,{"from": account})
-    t0 = goldenContract.isEqual(amount_sell_interest, chain_amount_sell_interest,{"from": account})
+    if not goldenContract.isEqual(nominal_buy_fee, chain_nominal_buy_fee,{"from": account}):
+        print(f"\nOperation Failed: {nominal_buy_fee} != {chain_nominal_buy_fee}")   
+        flag=False
+    if not goldenContract.isEqual(nominal_buy_interest, chain_nominal_buy_interest,{"from": account}):
+        print(f"\nOperation Failed: {nominal_buy_interest} != {chain_nominal_buy_interest}")   
+        flag=False
+    if not goldenContract.isEqual(nominal_sell_fee, chain_nominal_sell_fee,{"from": account}):
+        print(f"\nOperation Failed: {nominal_sell_fee} != {chain_nominal_sell_fee}")   
+        flag=False
+    if not goldenContract.isEqual(nominal_sell_interest, chain_nominal_sell_interest,{"from": account}):
+        print(f"\nOperation Failed: {nominal_sell_interest} != {chain_nominal_sell_interest}")   
+        flag=False
+    if not goldenContract.isEqual(amount_buy_fee, chain_amount_buy_fee,{"from": account}):
+        print(f"\nOperation Failed: {amount_buy_fee} != {chain_amount_buy_fee}")   
+        flag=False
+    if not goldenContract.isEqual(amount_buy_interest, chain_amount_buy_interest,{"from": account}):
+        print(f"\nOperation Failed: {amount_buy_interest} != {chain_amount_buy_interest}")   
+        flag=False
+    if not goldenContract.isEqual(amount_sell_fee, chain_amount_sell_fee,{"from": account}):
+        print(f"\nOperation Failed: {amount_sell_fee} != {chain_amount_sell_fee}") 
+        flag=False
+    if not goldenContract.isEqual(amount_sell_interest, chain_amount_sell_interest,{"from": account}):
+        print(f"\nOperation Failed: {amount_sell_interest} != {chain_amount_sell_interest}")   
+        flag=False
     
-    if(t3 == False or t4 == False or t5 == False or t6 == False or t7 == False or t8 == False or t9 == False or t0 == False):
-        print("All checks not matched!!")    
+    if flag == False:
+        print("\nAll checks not matched!!")    
     else:
-        print("All fine!!!")
+        print("\nAll fine!!!")
 
         trade1=f"buyPaymentConvention:{pc_buy}, sellPaymentConvention:{pc_sell}, nominalBuyFee:{nominal_buy_fee}, nominalBuyInterest:{nominal_buy_interest}, nominalSellFee:{nominal_sell_fee}, nominalSellInterest:{nominal_sell_interest}, amountBuyFee:{amount_buy_fee}, amountBuyInterest:{amount_buy_interest}, amountSellFee:{amount_sell_fee}, amountSellInterest:{amount_sell_interest}, jsonCID:{cid}"
         # print(trade)
@@ -59,4 +76,4 @@ def main(data,ID,goldenContract,cid):
 
         print(goldenContract.trades(ts,{"from": account}))
 
-        print("Successfully stored the data on the blockchain!!")
+        print("\nSuccessfully stored the data on the blockchain!!")

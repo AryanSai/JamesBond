@@ -1,4 +1,4 @@
-from brownie import accounts,GoldenContract,Contract
+from brownie import accounts,Contract
 import json,ipfsapi
 from datetime import date, datetime
 import scripts.foTradeCapture as foTradeCapture, scripts.gbo as gbo,scripts.murex as murex
@@ -114,7 +114,10 @@ def check(goldenContract,source_system,account):
             print('operand 1:', operand1)
             operand2=fetch_operand(op2)
             print('operand 2:', operand2)
-            list_of_trues.append(goldenContract.isEqual(operand1, operand2, {"from": account}))
+            if goldenContract.isEqual(operand1, operand2, {"from": account}):
+                list_of_trues.append(True)
+            else:
+                print(f"Operation Failed: {operand1} != {operand2}")    
         
         elif op == '>':
             #should be integer
@@ -123,8 +126,11 @@ def check(goldenContract,source_system,account):
             print('operand 1:', operand1)
             operand2=fetch_operand(op2)
             print('operand 2:', operand2)
-            list_of_trues.append(goldenContract.isGreater(operand1, operand2, {"from": account}))
-        
+            if goldenContract.isGreater(operand1, operand2, {"from": account}):
+                list_of_trues.append(True)
+            else:
+                print(f"Operation Failed: {operand1} not greater than {operand2}")    
+          
         elif op == 'in':
             print("inList")
             operand1 = fetch_operand(op1)
@@ -135,7 +141,10 @@ def check(goldenContract,source_system,account):
             elif op2 == 'paymentConventionList':
                 operand2 = paymentConventionList  
             print(operand2)
-            list_of_trues.append(goldenContract.inList(operand1,operand2, {"from": account}))   
+            if goldenContract.inList(operand1,operand2, {"from": account}):
+                list_of_trues.append(True)
+            else:
+                print(f"Operation Failed: {operand1} not in {operand2}")          
              
         else:
             print("Invalid Operand")

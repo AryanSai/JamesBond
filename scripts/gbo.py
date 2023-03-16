@@ -51,4 +51,5 @@ def main(goldenContract,data,ID,cid):
 
     print(goldenContract.trades(ts,{"from": account}))
 
-    print("successfully stored data on blockchain!!")    
+    print("\nSuccessfully stored the data on the blockchain!!")
+   

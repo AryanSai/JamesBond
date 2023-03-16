@@ -13,7 +13,7 @@
     "insertionTimestamp": "2024-06-05T14:11:10.000+01:00",
     "eventTimestamp": "2024-02-21T15:04:55.736+01:00",
     "ingestionTimestamp": "2024-06-05T14:11:10.000+01:00",
-    "sourceSystem": "GBO"
+    "sourceSystem": "Murex"
   },
   "esperanto": {
     "contractID": "contract1",
