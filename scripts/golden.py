@@ -162,10 +162,13 @@ def check(goldenContract,source_system,account):
 
     #check if all the rules are satisfied
     if(len(list_of_trues)==number_of_rules):
-        print('------------------------------------------------')  
-        print('\nAll the rules satisfied! Storing on Blockchain! ')
-        print('------------------------------------------------')  
-        go_to_contract(data,cid,source_system,goldenContract)
+        if(source_system!='Murex'):
+            print('------------------------------------------------')  
+            print('\nAll the rules satisfied! Storing on Blockchain! ')
+            print('------------------------------------------------')  
+            go_to_contract(data,cid,source_system,goldenContract)
+        else:
+            go_to_contract(data,cid,source_system,goldenContract)
     else:
         print('------------------------------------------------')  
         print('\nNot all rules are satisfied!!')    

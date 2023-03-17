@@ -35,6 +35,7 @@ def main(data,ID,goldenContract,cid):
     amount_sell_fee= data["esperanto"]["deals"]["deal1"]["legs"]["SELL_Floating"]["flows"][0]["amount"]
     amount_sell_interest= data["esperanto"]["deals"]["deal1"]["legs"]["SELL_Floating"]["flows"][0]["amount"]
 
+    print("\n---Checking on the chain for GBO copy of the Trade and checking if it has changed---")
     flag=True
     # check equality
     if not goldenContract.isEqual(nominal_buy_fee, chain_nominal_buy_fee,{"from": account}):
@@ -52,7 +53,7 @@ def main(data,ID,goldenContract,cid):
     if not goldenContract.isEqual(amount_buy_fee, chain_amount_buy_fee,{"from": account}):
         print(f"\nOperation Failed: {amount_buy_fee} != {chain_amount_buy_fee}")   
         flag=False
-    if not goldenContract.isEqual(amount_buy_interest, chain_amount_buy_interest,{"from": account}):
+    if not goldenContract.isEqual(int(amount_buy_interest), chain_amount_buy_interest,{"from": account}):
         print(f"\nOperation Failed: {amount_buy_interest} != {chain_amount_buy_interest}")   
         flag=False
     if not goldenContract.isEqual(amount_sell_fee, chain_amount_sell_fee,{"from": account}):
@@ -63,11 +64,11 @@ def main(data,ID,goldenContract,cid):
         flag=False
     
     if flag == False:
-        print('------------------------------------------------')  
-        print("\nAll the rules are not satisfied!")    
+        print('\nThe data is not the same as that of the GBO version! ')
+        print(f'\nThe CID of the JSON is: {cid}')
         print('------------------------------------------------')  
     else:
-        print('------------------------------------------------')  
+        print('\nThe data is same as that of the GBO version!')
         print('\nAll the rules satisfied! Storing on Blockchain! ')
         print('------------------------------------------------')  
 
