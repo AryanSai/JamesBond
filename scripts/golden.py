@@ -55,7 +55,7 @@ def fetch_operand(op):
     #op = "value:sairam"
     if op.split(":")[0] == 'key':
         path = op.split(":")[1]
-        print('key:',path)
+        # print('key:',path)
         keys = path.split("-")
         value = data
         for key in keys:
@@ -95,6 +95,7 @@ def check(goldenContract,source_system,account):
     #find the number of rules so that you can check if all rules are satisfied
     number_of_rules = len(section)
     print("\nNumber of Rules = ",number_of_rules)
+    print('------------------------------------------------')  
 
     #list of trues
     list_of_trues=[]
@@ -104,72 +105,87 @@ def check(goldenContract,source_system,account):
         op1 = words[0]
         op = words[1]
         op2 = ' '.join(words[2:])  #for special case of FO Trade Capture
-        print('\noperand1 :', op1)
-        print('operator :', op)
-        print('operand2 :', op2)
+        # print('\noperand1 :', op1)
+        # print('operator :', op)
+        # print('operand2 :', op2)
 
         if op == '=':
-            print("Equality")
+            print("\n---Equality Operation---")
             operand1=fetch_operand(op1)
             print('operand 1:', operand1)
             operand2=fetch_operand(op2)
             print('operand 2:', operand2)
             if goldenContract.isEqual(operand1, operand2, {"from": account}):
+                print(f"\nOperation Succeeded: {operand1} = {operand2}")    
+                print('------------------------------------------------')  
                 list_of_trues.append(True)
             else:
-                print(f"Operation Failed: {operand1} != {operand2}")    
+                print(f"\nOperation Failed: {operand1} != {operand2}")  
+                print('------------------------------------------------')  
         
         elif op == '>':
             #should be integer
-            print("Greater")
+            print("\n---Greater than Operation---")
             operand1=fetch_operand(op1)
             print('operand 1:', operand1)
             operand2=fetch_operand(op2)
             print('operand 2:', operand2)
             if goldenContract.isGreater(operand1, operand2, {"from": account}):
+                print(f"\nOperation Succeeded: {operand1} > {operand2}") 
+                print('------------------------------------------------')  
                 list_of_trues.append(True)
             else:
-                print(f"Operation Failed: {operand1} not greater than {operand2}")    
+                print(f"\nOperation Failed: {operand1} not greater than {operand2}")
+                print('------------------------------------------------')  
           
         elif op == 'in':
-            print("inList")
+            print("\n---inList---")
             operand1 = fetch_operand(op1)
-            print(operand1)
+            print('operand 1:', operand1)
             #should generalise this
             if op2 == 'nominalCurrencyList':
                 operand2 = nominalCurrencyList
             elif op2 == 'paymentConventionList':
                 operand2 = paymentConventionList  
-            print(operand2)
+            print('operand 2:', operand2)
+
             if goldenContract.inList(operand1,operand2, {"from": account}):
+                print(f"\nOperation Succeeded: {operand1} in {operand2}")  
+                print('------------------------------------------------')  
                 list_of_trues.append(True)
             else:
-                print(f"Operation Failed: {operand1} not in {operand2}")          
+                print(f"\nOperation Failed: {operand1} not in {operand2}") 
+                print('------------------------------------------------')  
              
         else:
-            print("Invalid Operand")
+            print("\nInvalid Operand")
 
     #check if all the rules are satisfied
     if(len(list_of_trues)==number_of_rules):
+        print('------------------------------------------------')  
         print('\nAll the rules satisfied! Storing on Blockchain! ')
+        print('------------------------------------------------')  
         go_to_contract(data,cid,source_system,goldenContract)
     else:
+        print('------------------------------------------------')  
         print('\nNot all rules are satisfied!!')    
+        print(f'\nThe CID of the JSON is: {cid}')
+        print('------------------------------------------------')  
 
 def go_to_contract(data,cid,source_system,goldenContract):
     ID = data['header']['internalID']
     #source_system = data['header']['sourceSystem']
 
     if source_system == 'FO Trade Capture':
-        print('FO Trade Capture')
+        # print('FO Trade Capture')
         foTradeCapture.main(goldenContract,data,ID,cid)
 
     elif source_system == 'GBO':
-        print('GBO')
+        # print('GBO')
         gbo.main(goldenContract,data,ID,cid)
 
     elif source_system == 'Murex':
-        print('Murex') 
+        # print('Murex') 
         murex.main(data,ID,goldenContract,cid)
 
 def main():

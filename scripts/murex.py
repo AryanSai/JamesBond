@@ -11,7 +11,7 @@ def main(data,ID,goldenContract,cid):
 
     struct_trade=goldenContract.findTrade(ID,'GBO',{"from": account})
     trade = struct_trade[2]    
-    print(trade)
+    # print(trade)
 
     chain_amount_buy_fee = re.search(r'amountBuyFee:(\d+\.\d+)', trade).group(1)
     chain_amount_buy_interest = re.search(r'amountBuyInterest:(\d+\.\d+)', trade).group(1)
@@ -63,9 +63,13 @@ def main(data,ID,goldenContract,cid):
         flag=False
     
     if flag == False:
-        print("\nAll checks not matched!!")    
+        print('------------------------------------------------')  
+        print("\nAll the rules are not satisfied!")    
+        print('------------------------------------------------')  
     else:
-        print("\nAll fine!!!")
+        print('------------------------------------------------')  
+        print('\nAll the rules satisfied! Storing on Blockchain! ')
+        print('------------------------------------------------')  
 
         trade1=f"buyPaymentConvention:{pc_buy}, sellPaymentConvention:{pc_sell}, nominalBuyFee:{nominal_buy_fee}, nominalBuyInterest:{nominal_buy_interest}, nominalSellFee:{nominal_sell_fee}, nominalSellInterest:{nominal_sell_interest}, amountBuyFee:{amount_buy_fee}, amountBuyInterest:{amount_buy_interest}, amountSellFee:{amount_sell_fee}, amountSellInterest:{amount_sell_interest}, jsonCID:{cid}"
         # print(trade)
