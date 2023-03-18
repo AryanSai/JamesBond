@@ -199,9 +199,11 @@ def main():
       file_murex = json.load(file)
     bytecode=file_murex['abi']
     
-    goldenContract = Contract.from_abi("GoldenContract.sol", '0x02c5E7ADBDaE96625d97606dEa3CEEE90A7437Ee', bytecode)
+    goldenContract = Contract.from_abi("GoldenContract.sol", '0x3433D2D5aDDCE9db2fa78E97C8Dc4E52334568b3', bytecode)
     
     # goldenContract = GoldenContract.deploy({"from":accounts[0]})
 
     source_system = input('Enter the name of the Source System: ')
     check(goldenContract,source_system,account)
+    
+    print('The End!!')
