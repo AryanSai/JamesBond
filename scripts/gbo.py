@@ -1,5 +1,4 @@
 import pytz
-from brownie import accounts
 from datetime import datetime,time
 
 def today():
@@ -11,9 +10,7 @@ def current_timestamp():
     current_date = datetime.now(pytz.timezone('GMT'))
     return int(current_date.timestamp())
 
-def main(goldenContract,data,ID,cid):
-    #get account
-    account = accounts.load("ganache")
+def main(goldenContract,data,ID,cid,account):
 
     ff_buy = data["esperanto"]["deals"]["deal1"]["legs"]["BUY_Fixed"]["fixingFrequency"]
     ff_sell = data["esperanto"]["deals"]["deal1"]["legs"]["SELL_Floating"]["fixingFrequency"]

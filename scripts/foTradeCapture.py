@@ -1,13 +1,11 @@
 from datetime import datetime
-from brownie import accounts
 import pytz
 
 def current_timestamp():
     current_date = datetime.now(pytz.timezone('GMT'))
     return int(current_date.timestamp())
 
-def main(goldenContract,data,ID,cid):
-    account = accounts.load("ganache")
+def main(goldenContract,data,ID,cid,account):
 
     #date from json
     ad = data['esperanto']['agreementDate']

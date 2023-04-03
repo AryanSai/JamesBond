@@ -166,30 +166,30 @@ def check(goldenContract,source_system,account):
             print('------------------------------------------------')  
             print('\nAll the rules satisfied! Storing on Blockchain! ')
             print('------------------------------------------------')  
-            go_to_contract(data,cid,source_system,goldenContract)
+            go_to_contract(data,cid,source_system,goldenContract,account)
         else:
-            go_to_contract(data,cid,source_system,goldenContract)
+            go_to_contract(data,cid,source_system,goldenContract,account)
     else:
         print('------------------------------------------------')  
         print('\nNot all rules are satisfied!!')    
         print(f'\nThe CID of the JSON is: {cid}')
         print('------------------------------------------------')  
 
-def go_to_contract(data,cid,source_system,goldenContract):
+def go_to_contract(data,cid,source_system,goldenContract,account):
     ID = data['header']['internalID']
     #source_system = data['header']['sourceSystem']
 
     if source_system == 'FO Trade Capture':
         # print('FO Trade Capture')
-        foTradeCapture.main(goldenContract,data,ID,cid)
+        foTradeCapture.main(goldenContract,data,ID,cid,account)
 
     elif source_system == 'GBO':
         # print('GBO')
-        gbo.main(goldenContract,data,ID,cid)
+        gbo.main(goldenContract,data,ID,cid,account)
 
     elif source_system == 'Murex':
         # print('Murex') 
-        murex.main(data,ID,goldenContract,cid)
+        murex.main(data,ID,goldenContract,cid,account)
 
 def main():
     account = accounts.load("ganache")
@@ -207,3 +207,8 @@ def main():
     check(goldenContract,source_system,account)
     
     print('The End!!')
+
+def load_test(account,goldenContract,source_system):
+    check(goldenContract,source_system,account)
+    print('The End!!')
+    print('###########################################################################################')

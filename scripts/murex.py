@@ -1,4 +1,3 @@
-from brownie import accounts
 from datetime import datetime
 import pytz,re
 
@@ -6,8 +5,7 @@ def current_timestamp():
     current_date = datetime.now(pytz.timezone('GMT'))
     return int(current_date.timestamp())
 
-def main(data,ID,goldenContract,cid):
-    account = accounts.load("ganache")
+def main(data,ID,goldenContract,cid,account):
 
     struct_trade=goldenContract.findTrade(ID,'GBO',{"from": account})
     trade = struct_trade[2]    
