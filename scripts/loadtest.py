@@ -2,8 +2,8 @@ from brownie import accounts,GoldenContract
 import time,random
 import scripts.golden as gold
 
-num_users = 3
-num_iterations = 2
+num_users = 20
+num_iterations = 5
 
 def get_account():
     accounts_list = [0,1,2,3,4,5,6,7,8,9]
@@ -31,5 +31,5 @@ def main():
     total_time = end_time - start_time
     
     print(f"Total time: {total_time:.2f} seconds")
+
     print(f"Transactions per second: {(num_users*num_iterations)/total_time:.2f}")
-    
