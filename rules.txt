@@ -1,10 +1,10 @@
-key:header-sourceSystem = value:FO Trade Capture
-key:esperanto-agreementDate = value:Today
-key:esperanto-deals-deal1-legs-BUY_Fixed-flows[0]-nominalCurrency in nominalCurrencyList
-
 key:header-sourceSystem = value:GBO
 key:esperanto-deals-deal1-legs-BUY_Fixed-flows[0]-settlementDate > value:Today
 key:esperanto-deals-deal1-legs-BUY_Fixed-fixingFrequency = key:esperanto-deals-deal1-legs-BUY_Fixed-paymentFrequency
+
+key:header-sourceSystem = value:FOTradeCapture
+key:esperanto-agreementDate = value:Today
+key:esperanto-deals-deal1-legs-BUY_Fixed-flows[0]-nominalCurrency in nominalCurrencyList
 
 key:header-sourceSystem = value:Murex
 key:esperanto-deals-deal1-legs-BUY_Fixed-paymentConvention in paymentConventionList

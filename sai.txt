@@ -22,3 +22,40 @@ function getTradesByTimestamp(uint256 timestamp) public view returns (Trade[] me
     }
     return matchingTrades[0:count];
 }
+
+
+
+
+def get_file():
+    directory_path = "/home/dmacs/Desktop/JamesBond/Events"
+    files = os.listdir(directory_path)
+    sorted_file_list = sorted(files, key=lambda x: int(x.split('.')[0]))
+    print(sorted_file_list)
+    file = random.choice(files)
+    path = os.path.join(directory_path, file)
+    print("file path: ", path)
+    return path
+
+def get_file():
+    global previous_file
+    directory_path = "/home/dmacs/Desktop/JamesBond/Events"
+    files = os.listdir(directory_path)
+    sorted_file_list = sorted(files)
+
+    # If previous_file exists in the directory, get its index
+    if previous_file in sorted_file_list:
+        index = sorted_file_list.index(previous_file)
+        # If previous_file is not the last file in the directory, get the next file
+        if index < len(sorted_file_list) - 1:
+            file = sorted_file_list[index + 1]
+        # If previous_file is the last file in the directory, get the first file
+        else:
+            file = sorted_file_list[0]
+    # If previous_file does not exist in the directory or it's the first call to the function, get the first file
+    else:
+        file = sorted_file_list[0]
+
+    previous_file = file
+    path = os.path.join(directory_path, file)
+    print("file path: ", path)
+    return path

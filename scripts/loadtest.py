@@ -1,6 +1,6 @@
 from brownie import accounts,GoldenContract
 import time,random
-import scripts.golden as gold
+import scripts.checker as gold
 
 num_users = 20
 num_iterations = 5
@@ -25,7 +25,7 @@ def main():
         for j in range(num_iterations):
             account = get_account()
             source_system = get_ss()
-            gold.load_test(account,goldenContract,source_system)
+            gold.test(account,goldenContract,source_system)
 
     end_time = time.time()
     total_time = end_time - start_time

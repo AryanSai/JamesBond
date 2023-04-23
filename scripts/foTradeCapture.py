@@ -6,7 +6,6 @@ def current_timestamp():
     return int(current_date.timestamp())
 
 def main(goldenContract,data,ID,cid,account):
-
     #date from json
     ad = data['esperanto']['agreementDate']
     date = datetime.strptime(ad, '%d-%m-%Y')
@@ -29,3 +28,4 @@ def main(goldenContract,data,ID,cid,account):
     
     print("\nSuccessfully stored the data on the blockchain!!")
 
+    return 1
