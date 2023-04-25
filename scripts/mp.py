@@ -1,12 +1,8 @@
 from brownie import accounts, GoldenContract
-import multiprocessing as mp
-import time
-import random
-import scripts.checker as checker
+import multiprocessing as mp,time,random,scripts.checker as checker
 
 num_processes = 1
-num_iterations = 3
-
+num_iterations = 6
 def calculate_time(start_time):
     # Calculate and print the results
     total_time = time.time() - start_time

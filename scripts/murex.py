@@ -10,7 +10,7 @@ def current_timestamp():
 def main(data, ID, goldenContract, cid, account):
     struct_trade = goldenContract.findTrade(ID, "GBO", {"from": account})
     trade = struct_trade[2]
-    print(trade)
+    # print(trade)
 
     if trade is not None:
         chain_amount_buy_fee = re.search(r"amountBuyFee:(\d+\.\d+)", trade).group(1)

@@ -1,17 +1,22 @@
 from brownie import accounts, GoldenContract
-import threading
-import time
-import random
-import scripts.checker as checker
+import threading,time,random,scripts.checker as checker
 
-num_threads = 1
-num_iterations = 1
+num_threads = 4
+num_iterations = 7
+
+COUNT = 0
+
+def increment():
+    global COUNT
+    COUNT = COUNT + 1
 
 def calculate_time(start_time):
     # Calculate and print the results
     total_time = time.time() - start_time
     print(f"Total time: {total_time:.2f} seconds")
-    print(f"Trades per second: {(num_threads*num_iterations)/total_time:.2f}")
+    print("Total no. of transactions: ",COUNT)
+    print(f"Trades per second: {total_time/COUNT:.2f}")
+
 
 def get_account():
     accounts_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -20,7 +25,7 @@ def get_account():
     return account
 
 def get_ss():
-    ss_list = ["GBO", "FO Trade Capture", "Murex"]
+    ss_list = ["GBO", "FOTradeCapture", "Murex"]
     if not hasattr(get_ss, "index"):
         get_ss.index = 0
     ss = ss_list[get_ss.index]
@@ -31,8 +36,8 @@ def thread_func(goldenContract):
     for j in range(num_iterations):
         account = get_account()
         source_system = get_ss()
+        increment()
         checker.test(goldenContract, source_system, account)
-
 
 def main():
     goldenContract = GoldenContract.deploy({"from": accounts[0]})

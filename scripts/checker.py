@@ -1,5 +1,5 @@
 from brownie import accounts, Contract
-import json, ipfsapi, os, random
+import json, ipfsapi, os
 from datetime import date, datetime
 import scripts.foTradeCapture as foTradeCapture, scripts.gbo as gbo, scripts.murex as murex
 
@@ -57,6 +57,7 @@ def get_file():
 
 
 def getSection(sourceSytem):
+    # print(sourceSytem)
     with open("/home/dmacs/Desktop/JamesBond/rules.txt", "r") as file:
         file_content = file.read()
     sections = file_content.split("\n\n")
@@ -65,9 +66,7 @@ def getSection(sourceSytem):
         lines = section.split("\n")
         if len(lines) > 0:
             first_line = lines[0]
-            if first_line.startswith(
-                "key:header-sourceSystem = value:FOTradeCapture"
-            ):
+            if first_line.startswith("key:header-sourceSystem = value:FOTradeCapture"):
                 # print('\nFound FO')
                 fo = section
 
@@ -82,10 +81,13 @@ def getSection(sourceSytem):
                 print("Unknown section:")
 
     if sourceSytem == "GBO":
+        print(sourceSytem)
         return gbo
     elif sourceSytem == "FOTradeCapture":
+        print(sourceSytem)
         return fo
     elif sourceSytem == "Murex":
+        print(sourceSytem)
         return murex
 
 
@@ -132,12 +134,13 @@ def check(goldenContract, source_system, account,path):
     # open the json
     with open(path, "r") as file:
         data = json.load(file)
+    # print(data)
 
     # upload the json and get cid
     cid = ipfs(path)
 
     section = getSection(source_system)
-
+    print(section)
     # read rules and do checking on the contract
     section = section.split("\n")
 

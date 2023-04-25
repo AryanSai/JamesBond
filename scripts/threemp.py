@@ -1,10 +1,8 @@
-from brownie import accounts, GoldenContract
-import multiprocessing as mp
-import time
-import random
+from brownie import accounts, Contract
+import multiprocessing as mp,time,random,json
 import scripts.threechecker as checker
 
-num_processes = 1
+num_processes = 2
 num_iterations = 1
 
 def calculate_time(start_time):
@@ -27,7 +25,16 @@ def process_func(goldenContract):
         checker.test(goldenContract, account)
 
 def main():
-    goldenContract = GoldenContract.deploy({"from": accounts[0]})
+    # goldenContract = GoldenContract.deploy({"from": accounts[0]})
+    with open(
+        "/home/dmacs/Desktop/JamesBond/build/contracts/GoldenContract.json", "r"
+    ) as file:
+        file_ = json.load(file)
+    bytecode = file_["abi"]
+
+    goldenContract = Contract.from_abi(
+        "GoldenContract.sol", "0x3433D2D5aDDCE9db2fa78E97C8Dc4E52334568b3", bytecode
+    )
     start_time = time.time()
     # Create a list to hold the processes
     processes = []

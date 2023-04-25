@@ -1,7 +1,7 @@
 import json,os
 
 def main():    
-    new_date='23-04-2023'
+    new_date='24-04-2023'
     folder_path='/home/dmacs/Desktop/JamesBond/Events'
     files = os.listdir(folder_path)
     for f in files:
@@ -13,6 +13,6 @@ def main():
         f = open(path, "w")
         json.dump(data, f)
         f.close()
-        print( data['esperanto']['agreementDate'])
+    print('Done')
 
 main()
