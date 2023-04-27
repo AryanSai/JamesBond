@@ -2,7 +2,7 @@ from brownie import accounts,Contract
 import threading,json,time, random, scripts.threechecker as checker
 
 num_threads = 1
-num_iterations = 4
+num_iterations = 1
 
 def calculate_time(start_time):
     # Calculate and print the results

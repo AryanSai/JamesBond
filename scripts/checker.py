@@ -18,7 +18,6 @@ nominalCurrencyList = [
 paymentConventionList = ["in arrears", "in advance"]
 previous_file = None
 
-
 # with open("/home/dmacs/Desktop/JamesBond/IRS1.json", "r") as file:
 #         data = json.load(file)
 
@@ -81,13 +80,13 @@ def getSection(sourceSytem):
                 print("Unknown section:")
 
     if sourceSytem == "GBO":
-        print(sourceSytem)
+        # print(sourceSytem)
         return gbo
     elif sourceSytem == "FOTradeCapture":
-        print(sourceSytem)
+        # print(sourceSytem)
         return fo
     elif sourceSytem == "Murex":
-        print(sourceSytem)
+        # print(sourceSytem)
         return murex
 
 
@@ -140,6 +139,7 @@ def check(goldenContract, source_system, account,path):
     cid = ipfs(path)
 
     section = getSection(source_system)
+    print('\nThe Rules for ',source_system,' are :')
     print(section)
     # read rules and do checking on the contract
     section = section.split("\n")
@@ -162,50 +162,53 @@ def check(goldenContract, source_system, account,path):
         # print('operand2 :', op2)
 
         if op == "=":
-            print("\n---Equality Operation---")
+            # print("\n---Equality Operation---")
             operand1 = fetch_operand(data, op1)
-            print("operand 1:", operand1)
+            # print("operand 1:", operand1)
             operand2 = fetch_operand(data, op2)
-            print("operand 2:", operand2)
+            # print("operand 2:", operand2)
             if goldenContract.isEqual(operand1, operand2, {"from": account}):
-                print(f"\nOperation Succeeded: {operand1} = {operand2}")
-                print("------------------------------------------------")
+                # print(f"\nOperation Succeeded: {operand1} = {operand2}")
+                # print("------------------------------------------------")
                 list_of_trues.append(True)
             else:
+                print(rule)
                 print(f"\nOperation Failed: {operand1} != {operand2}")
                 print("------------------------------------------------")
 
         elif op == ">":
             # should be integer
-            print("\n---Greater than Operation---")
+            # print("\n---Greater than Operation---")
             operand1 = fetch_operand(data, op1)
-            print("operand 1:", operand1)
+            # print("operand 1:", operand1)
             operand2 = fetch_operand(data, op2)
-            print("operand 2:", operand2)
+            # print("operand 2:", operand2)
             if goldenContract.isGreater(operand1, operand2, {"from": account}):
-                print(f"\nOperation Succeeded: {operand1} > {operand2}")
-                print("------------------------------------------------")
+                # print(f"\nOperation Succeeded: {operand1} > {operand2}")
+                # print("------------------------------------------------")
                 list_of_trues.append(True)
             else:
+                print(rule)
                 print(f"\nOperation Failed: {operand1} not greater than {operand2}")
                 print("------------------------------------------------")
 
         elif op == "in":
-            print("\n---inList---")
+            # print("\n---inList---")
             operand1 = fetch_operand(data, op1)
-            print("operand 1:", operand1)
+            # print("operand 1:", operand1)
             # should generalise this
             if op2 == "nominalCurrencyList":
                 operand2 = nominalCurrencyList
             elif op2 == "paymentConventionList":
                 operand2 = paymentConventionList
-            print("operand 2:", operand2)
+            # print("operand 2:", operand2)
 
             if goldenContract.inList(operand1, operand2, {"from": account}):
-                print(f"\nOperation Succeeded: {operand1} in {operand2}")
-                print("------------------------------------------------")
+                # print(f"\nOperation Succeeded: {operand1} in {operand2}")
+                # print("------------------------------------------------")
                 list_of_trues.append(True)
             else:
+                print(rule)
                 print(f"\nOperation Failed: {operand1} not in {operand2}")
                 print("------------------------------------------------")
 
@@ -262,13 +265,15 @@ def main():
         "GoldenContract.sol", "0x3433D2D5aDDCE9db2fa78E97C8Dc4E52334568b3", bytecode
     )
     # goldenContract = GoldenContract.deploy({"from":accounts[0]})
-    path = get_file()
-    source_system = input("Enter the name of the Source System: ")
+    path = '/home/dmacs/Desktop/JamesBond/Events/8.json'
+    print('\n Path of the file: ',path)
+    # source_system = input("Enter the name of the Source System: ")
+    source_system = 'Murex'
+    print('\n---Checking if the given JSON originating from ',source_system,' satisfies all the rules---')
     check(goldenContract, source_system, account,path)
-    print("The End!!")
+    print("\nThe End!!")
 
 
 def test(goldenContract, source_system, account):
     path = get_file()
     return check(goldenContract, source_system, account,path)
-    

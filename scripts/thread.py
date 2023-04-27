@@ -1,8 +1,8 @@
 from brownie import accounts, GoldenContract
 import threading,time,random,scripts.checker as checker
 
-num_threads = 4
-num_iterations = 7
+num_threads = 1
+num_iterations = 10
 
 COUNT = 0
 
@@ -16,7 +16,6 @@ def calculate_time(start_time):
     print(f"Total time: {total_time:.2f} seconds")
     print("Total no. of transactions: ",COUNT)
     print(f"Trades per second: {total_time/COUNT:.2f}")
-
 
 def get_account():
     accounts_list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
@@ -34,6 +33,7 @@ def get_ss():
 
 def thread_func(goldenContract):
     for j in range(num_iterations):
+        print("j: ",j)
         account = get_account()
         source_system = get_ss()
         increment()
@@ -47,6 +47,7 @@ def main():
 
     # Start the threads
     for i in range(num_threads):
+        print("i: ",i)
         t = threading.Thread(target=thread_func, args=(goldenContract,))
         t.start()
         threads.append(t)

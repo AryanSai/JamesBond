@@ -85,9 +85,9 @@ def main(data, ID, goldenContract, cid, account):
             t = goldenContract.store(ts, ID, "Murex", trade1, {"from": account})
             t.wait(1)
 
-            print(goldenContract.trades(ts, {"from": account}))
-
             print("\nSuccessfully stored the data on the blockchain!!")
+            print("\nThe details of the trade as stored on the blockchain:")
+            print(goldenContract.trades(ts,{"from": account}))
             return 1
     else:
         print("There is no instance of this trade on the blockchain!!")
